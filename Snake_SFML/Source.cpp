@@ -163,11 +163,6 @@ int main()
 
 			break;
 
-		default:
-			cout << "Wrong choice!" << endl;
-			system("pause");
-			exit(0);
-			break;
 		}
 
 		system("cls");
