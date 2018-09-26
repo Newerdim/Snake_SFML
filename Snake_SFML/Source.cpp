@@ -12,7 +12,8 @@ int sizeo = 20;
 int w = width * sizeo;
 int h = height * sizeo;
 
-float delay = 0.1;
+float delay = 0.100;
+float fdelay = 5;
 
 bool hardmode = false; //hardmode
 bool wallj = false;
@@ -37,9 +38,14 @@ struct Fruit
 
 void Fruit()
 {
+	//speed
+	if (hardmode == true)
+	{
+		delay -= 0.001;
+	}
+
 	bool newFruit = false;
 
-	if(hardmode == true) delay -= 0.003;
 	int fx, fy;
 
 	fx = rand() % width;
@@ -79,10 +85,10 @@ void Tick()
 		{
 			Fruit();
 			numb++;
-			score++;
+			score = numb - 1;
 			system("cls");
 			cout << "Score: " << score;
-			if (score == 900)
+			if (score == 800)
 			{
 				system("cls");
 				cout << "You won!" << endl;
@@ -92,7 +98,15 @@ void Tick()
 
 		//tail colision
 		if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y) && snakeeattail == false) gameOver = true;
-		else if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y) && snakeeattail == true) numb = i;
+		else if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y) && snakeeattail == true)
+		{
+			numb = i;
+			if (hardmode == true)
+			{
+				score = numb - 1;
+				delay = ((fdelay / 100.00 ) - (numb * 0.001));
+			}
+		}
 
 	}
 
@@ -105,20 +119,18 @@ void Tick()
 	//wall colision
 	if (!wallj)
 	{
-		if (s[0].x == width + 1) gameOver = true;
+		if (s[0].x == width) gameOver = true;
 		if (s[0].x == -1) gameOver = true;
-		if (s[0].y == height + 1) gameOver = true;
+		if (s[0].y == height) gameOver = true;
 		if (s[0].y == -1) gameOver = true;
 	}
 	else
 	{
 		if (s[0].x == width ) s[0].x = 0;
-		if (s[0].x == -1) s[0].x = width;
+		if (s[0].x == -1) s[0].x = width-1;
 		if (s[0].y == height ) s[0].y = 0;
-		if (s[0].y == -1) s[0].y = height;
+		if (s[0].y == -1) s[0].y = height-1;
 	}
-
-
 
 }
 
@@ -130,7 +142,7 @@ int main()
 		Fruit();
 
 		//restart
-		delay = 0.2;
+		fdelay;
 		dir = 0;
 		numb = 1;
 		score = 0;
@@ -159,7 +171,7 @@ int main()
 			break;
 		case 50:
 			system("cls");
-			cout << "Speed(0.1 = fast, 0.5 = slow): "; cin >> delay;
+			cout << "Speed(1 = fast, 10 = slow): "; cin >> fdelay;
 			cout << "Wall jump(1 = Yes, 2 = No): "; cin >> wall;
 			cout << "Hardmode(1 = Yes, 2 = No): "; cin >> hardmodeq;
 			cout << "Tail eat(1 = Yes, 2 = No): "; cin >> snakeeattail;
@@ -171,18 +183,21 @@ int main()
 			else admin = false;
 			if (wall == "1") wallj = true;
 			else wallj = false;
-			
 
 			break;
 		case 51:
 			return 0;
+			break;
 
+		default:
 			break;
 
 		}
+		delay = (fdelay / 100.00);
+		choice = 0;
 
 		system("cls");
-		cout << "Score: " << score;
+		cout << "Score: " << score << endl;
 
 		srand(time(0));
 
