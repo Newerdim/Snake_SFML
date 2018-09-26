@@ -16,6 +16,7 @@ float delay = 0.1;
 
 bool hardmode = false; //hardmode
 bool wallj = false;
+bool snakeeattail = true;
 
 bool admin = false; //devmod
 
@@ -36,19 +37,29 @@ struct Fruit
 
 void Fruit()
 {
-	if(hardmode == true) delay -= 0.001;
+	bool newFruit = false;
+
+	if(hardmode == true) delay -= 0.003;
 	int fx, fy;
 
 	fx = rand() % width;
 	fy = rand() % height;
 
-	for (int i = 0; i < numb; i++)
+	for (int i = 0; i <= numb; i++)
 	{
-		if ((s[i].x == fx) && (s[i].y == fy)) Fruit();
+		if ((s[i].x == fx) && (s[i].y == fy))
+		{
+			newFruit = true;
+		}
+		else;
 	}
 
-	f.x = fx;
-	f.y = fy;
+	if (newFruit == false)
+	{
+		f.x = fx;
+		f.y = fy;
+	}
+	else Fruit();
 }
 
 void Tick()
@@ -71,7 +82,7 @@ void Tick()
 			score++;
 			system("cls");
 			cout << "Score: " << score;
-			if (score == 899)
+			if (score == 900)
 			{
 				system("cls");
 				cout << "You won!" << endl;
@@ -80,7 +91,8 @@ void Tick()
 		}
 
 		//tail colision
-		if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y)) gameOver = true;
+		if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y) && snakeeattail == false) gameOver = true;
+		else if ((s[i + 1].x == s[0].x) && (s[i + 1].y == s[0].y) && snakeeattail == true) numb = i;
 
 	}
 
@@ -100,9 +112,9 @@ void Tick()
 	}
 	else
 	{
-		if (s[0].x == width + 1) s[0].x = 0;
+		if (s[0].x == width ) s[0].x = 0;
 		if (s[0].x == -1) s[0].x = width;
-		if (s[0].y == height + 1) s[0].y = 0;
+		if (s[0].y == height ) s[0].y = 0;
 		if (s[0].y == -1) s[0].y = height;
 	}
 
@@ -115,7 +127,10 @@ int main()
 {
 	for (;;)
 	{
+		Fruit();
+
 		//restart
+		delay = 0.2;
 		dir = 0;
 		numb = 1;
 		score = 0;
@@ -123,13 +138,12 @@ int main()
 		gameOver = false;
 		s[0].x = width / 2;
 		s[0].y = height / 2;
+		int choice = 0;
 
 
 		string passw;
 		string hardmodeq;
 		string wall;
-
-		int choice;
 
 		cout << "1. Play" << endl;
 		cout << "2. Settings" << endl;
@@ -148,6 +162,7 @@ int main()
 			cout << "Speed(0.1 = fast, 0.5 = slow): "; cin >> delay;
 			cout << "Wall jump(1 = Yes, 2 = No): "; cin >> wall;
 			cout << "Hardmode(1 = Yes, 2 = No): "; cin >> hardmodeq;
+			cout << "Tail eat(1 = Yes, 2 = No): "; cin >> snakeeattail;
 			cout << "Haslo admin: "; cin >> passw;
 
 			if (hardmodeq == "1") hardmode = true;
@@ -156,6 +171,7 @@ int main()
 			else admin = false;
 			if (wall == "1") wallj = true;
 			else wallj = false;
+			
 
 			break;
 		case 51:
@@ -218,10 +234,10 @@ int main()
 			}
 
 			//MOVE
-			if (Keyboard::isKeyPressed(Keyboard::Key::Up)) dir = 1;
-			if (Keyboard::isKeyPressed(Keyboard::Key::Right)) dir = 2;
-			if (Keyboard::isKeyPressed(Keyboard::Key::Down)) dir = 3;
-			if (Keyboard::isKeyPressed(Keyboard::Key::Left)) dir = 4;
+			if (Keyboard::isKeyPressed(Keyboard::Key::Up) && dir != 3) dir = 1;
+			if (Keyboard::isKeyPressed(Keyboard::Key::Right) && dir != 4) dir = 2;
+			if (Keyboard::isKeyPressed(Keyboard::Key::Down) && dir != 1) dir = 3;
+			if (Keyboard::isKeyPressed(Keyboard::Key::Left) && dir != 2) dir = 4;
 			if (Keyboard::isKeyPressed(Keyboard::Key::F1) && admin == true) { Fruit(); numb++; score++; system("cls"); cout << "Score: " << score; };
 			if (Keyboard::isKeyPressed(Keyboard::Key::Escape)) window.close();
 
